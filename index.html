@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Youngwook Kim, Senior Researcher at ETRI. Off-angle iris recognition, continuous authentication for smart glasses, real-time ray tracing and foveated rendering.">
+<meta name="author" content="Youngwook Kim">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Youngwook Kim · 김영욱</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* base reset */
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: fixed identity column on the left, one long reading column on the right. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #E7ECEF;
+  --fg: #13212B;
+  --muted: #556773;
+  --rule: #CFD8DE;
+  --accent: #A8143F;
+  --accent-soft: #F3DCE3;
+  --display: "Bricolage Grotesque", "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E161C; --surface: #17222A; --fg: #E3EAEE; --muted: #93A4AF;
+    --rule: #26343E; --accent: #FF7093; --accent-soft: #3A1723; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E161C; --surface: #17222A; --fg: #E3EAEE; --muted: #93A4AF;
+  --rule: #26343E; --accent: #FF7093; --accent-soft: #3A1723; color-scheme: dark;
+}
+
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 16px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+
+
+.page {
+  max-width: 1120px; margin-inline: auto;
+  padding-inline: 20px; padding-block: 40px 72px;
+  display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 64px;
+  align-items: start;
+}
+
+/* ---------- identity column ---------- */
+.side {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 32px);
+  display: flex; flex-direction: column; gap: 22px;
+}
+.portrait {
+  display: block; width: 198px; height: auto; aspect-ratio: 1; max-width: 100%;
+  border-radius: 50%; object-fit: cover; background: var(--surface);
+  border: 1px solid var(--rule);
+}
+.name { font-family: var(--display); font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+.name-alt { font-size: 17px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+.role { font-size: 15px; line-height: 1.5; }
+.role strong { font-weight: 600; display: block; }
+.role span { color: var(--muted); }
+.contact { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.contact dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.contact dd { margin: 0; overflow-wrap: anywhere; }
+.contact div { display: flex; flex-direction: column; gap: 1px; }
+.mail-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mail { font-family: var(--mono); font-size: 13.5px; user-select: all; }
+.btn {
+  font: 500 11px/1 var(--mono); letter-spacing: 0.04em;
+  color: var(--fg); background: transparent;
+  border: 1px solid var(--rule); border-radius: 3px;
+  padding: 6px 8px; cursor: pointer;
+}
+.btn:hover { border-color: var(--muted); }
+.nav { display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.nav a { color: var(--fg); text-decoration: none; }
+.nav a:hover { color: var(--accent); }
+
+/* ---------- reading column ---------- */
+.main { display: flex; flex-direction: column; gap: 56px; min-width: 0; }
+section { display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 24px; }
+h2 {
+  font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -0.015em;
+  line-height: 1.2; padding-bottom: 10px; border-bottom: 1px solid var(--rule);
+}
+h3 { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.bio { display: flex; flex-direction: column; gap: 14px; max-width: 66ch; font-size: 17px; }
+.bio strong { font-weight: 600; color: var(--fg); }
+.interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 36px; }
+.interests li { display: flex; flex-direction: column; gap: 4px; }
+.interests strong { font-weight: 600; font-size: 16px; }
+.interests span { color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+
+/* publication rows: year is the scan key */
+.pubs { display: flex; flex-direction: column; }
+.pub {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 4px 20px;
+  padding-block: 16px; border-bottom: 1px solid var(--rule);
+}
+/* 대표 이미지 자리: images/<항목>.jpg 를 넣으면 표시되고, 파일이 없으면 빈 상자만 보인다 */
+.thumb { display: block; width: 300px; aspect-ratio: 3 / 2; object-fit: contain; border-radius: 4px; background: var(--surface); border: 1px solid var(--rule); }
+.pub.no-thumb { grid-template-columns: minmax(0, 1fr); }
+.pub:first-child { padding-top: 0; }
+.pub:last-child { border-bottom: 0; padding-bottom: 0; }
+.pub-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.title { font-weight: 600; font-size: 16.5px; line-height: 1.4; }
+.title a { color: var(--fg); text-decoration-color: var(--rule); }
+.title a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.authors { font-size: 14.5px; color: var(--muted); }
+.authors b { color: var(--fg); font-weight: 600; }
+.venue { font-size: 14.5px; }
+.venue em { font-style: normal; font-weight: 600; }
+.gist { font-size: 14.5px; color: var(--muted); max-width: 64ch; }
+.award { font-size: 14px; font-weight: 600; color: var(--accent); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--mono); font-size: 12px; margin-top: 2px; }
+
+
+
+@media (max-width: 840px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 28px 56px; }
+  .side { position: static; }
+  .interests { grid-template-columns: minmax(0, 1fr); }
+  .nav { flex-direction: row; flex-wrap: wrap; gap: 6px 18px; }
+  .portrait { width: 144px; }
+}
+@media (max-width: 460px) {
+  .pub { grid-template-columns: minmax(0, 1fr); }
+  .thumb { width: 100%; max-width: 300px; }
+  .bio { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <aside class="side">
+    <img class="portrait" src="portrait.jpg" alt="Youngwook Kim" width="640" height="640">
+
+    <div>
+      <h1 class="name">Youngwook Kim</h1>
+      <p class="name-alt"><span lang="ko">김영욱</span></p>
+    </div>
+
+    <p class="role">
+      <strong>Senior Researcher, Ph.D.</strong>
+      Affective Computing Research Section<br>Electronics and Telecommunications Research Institute (ETRI)
+      
+    </p>
+
+    <dl class="contact">
+      <div>
+        <dt>Email</dt>
+        <dd class="mail-row"><span class="mail" id="mail">yw.kim@etri.re.kr</span>
+          <button class="btn" id="copy" type="button">Copy</button></dd>
+      </div>
+      <div>
+        <dt>Office</dt>
+        <dd>218 Gajeong-ro, Yuseong-gu,<br>Daejeon 34129, Korea</dd>
+      </div>
+    </dl>
+
+    <nav class="nav" aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#research">Research Interests</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#international">International Papers</a>
+      <a href="#domestic">Domestic Papers</a>
+      <a href="#patents">Patents</a>
+    </nav>
+
+  </aside>
+
+  <main class="main">
+
+    <section id="about">
+      <h2>About</h2>
+      <div class="bio">
+        <p>I am a <strong>senior researcher at ETRI</strong> in Daejeon, South Korea. My research interests include <strong>user recognition from near-infrared eye images</strong> captured by AI smart glasses, such as <strong>off-angle iris recognition</strong> and <strong>continuous authentication</strong>.</p>
+        <p>I received my <strong>Ph.D. in Computer Science and Engineering from Sogang University</strong> in 2023, advised by Prof. Insung Ihm. My doctoral research was on <strong>real-time ray tracing for virtual reality</strong>, covering foveated rendering for head-mounted displays and view synthesis for live immersive video.</p>
+      </div>
+    </section>
+
+    <section id="research">
+      <h2>Research Interests</h2>
+      <ul class="interests">
+        <li>
+          <strong>Off-angle iris recognition and continuous authentication</strong>
+          <span>User recognition from near-infrared eye images captured by AI smart glasses, where the eye is seen at an angle rather than head-on.</span>
+        </li>
+        <li>
+          <strong>Real-time ray tracing and foveated rendering</strong>
+          <span>Ray tracing for head-mounted displays and mobile GPUs: foveated and selective sampling, adaptive undersampling, and CUDA/OptiX acceleration.</span>
+        </li>
+        <li>
+          <strong>Immersive video and virtual view synthesis</strong>
+          <span>6DoF immersive video rendering from multiple RGB-D streams, depth-image-based view synthesis, and ray-traced 3D background models for disocclusion filling.</span>
+        </li>
+        <li>
+          <strong>Multimodal 3D reconstruction and spatial understanding</strong>
+          <span>Depth camera pose tracking, multi-sensor RGB-D fusion, and real-time reconstruction of dynamic objects and spaces for XR.</span>
+        </li>
+        <li>
+          <strong>Volume rendering for medical imaging</strong>
+          <span>Physically based volume rendering of noisy 3D ultrasound data, and AI-assisted volume registration and stitching.</span>
+        </li>
+        <li>
+          <strong>GPU algorithms and parallel optimization</strong>
+          <span>Real-time processing of large-scale 3D data with CUDA, OpenCL, and OptiX, and rendering pipelines that combine graphics with AI models.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section id="thesis">
+      <h2>Thesis</h2>
+      <ol class="pubs">
+        <li class="pub no-thumb">
+          <div class="pub-body">
+            <p class="title"><a href="https://dcollection.sogang.ac.kr/dcollection/srch/srchDetail/000000076306">A Study on Ray-tracing-based Real-time Rendering Methods for Enhancing Rendering Quality in Virtual Reality</a></p>
+            <p class="authors"><b>Youngwook Kim</b></p>
+            <p class="venue"><em>Ph.D. Thesis</em>, Dept. of Computer Science and Engineering, Sogang University, 2023</p>
+            <p class="links"><a href="https://dcollection.sogang.ac.kr/dcollection/srch/srchDetail/000000076306">Sogang dCollection</a></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="international">
+      <h2>International Papers</h2>
+      <ol class="pubs">
+        <li class="pub">
+          <img class="thumb" src="images/2024_virtual_reality.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.1007/s10055-023-00921-w">Ray tracing-based construction of 3D background model for real-time stereoscopic rendering of live immersive video</a></p>
+            <p class="authors"><b>Youngwook Kim</b>, Jehyeong Yun, Joungil Yun, Sangwoon Kwak, and Insung Ihm</p>
+            <p class="venue"><em>Virtual Reality</em>, 28(1):17, 2024</p>
+            <p class="links"><a href="https://doi.org/10.1007/s10055-023-00921-w">Springer</a><a href="https://drive.google.com/file/d/1I0JIlFC_dOGVERPRXuFQYEGDI8qwseDg/view?usp=sharing">Video 1(Hijack)</a><a href="https://drive.google.com/file/d/163rn7xsz64i3sqh7DZwu8gGmYOCX8alu/view?usp=sharing">Video 2(Gymnasium A)</a><a href="https://drive.google.com/file/d/1Iv69bh2LuSkLv49qf2hx2nsPvDXdLv82/view?usp=sharing">Video 3(Gymnasium B)</a><a href="https://drive.google.com/file/d/1ueFPajPyfRuDo3RaPIvBmDeTID8LIERv/view?usp=sharing">Video 4(Others)</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2022_etri_journal.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.4218/etrij.2021-0205">View synthesis with sparse light field for 6DoF immersive video</a></p>
+            <p class="authors">Sangwoon Kwak, Joungil Yun, Jun-Young Jeong, <b>Youngwook Kim</b>, Insung Ihm, Won-Sik Cheong, and Jeongil Seo</p>
+            <p class="venue"><em>ETRI Journal</em>, 44(1):24–37, 2022</p>
+            <p class="links"><a href="https://doi.org/10.4218/etrij.2021-0205">Wiley</a><a href="https://drive.google.com/file/d/1XHwY_LiwHQc-81RpjROu25Zuqk6XlZ3n/view?usp=sharing">Video</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2021_ismar.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.1109/ISMAR52148.2021.00058">Selective Foveated Ray Tracing for Head-Mounted Displays</a></p>
+            <p class="authors"><b>Youngwook Kim</b>, Yunmin Ko, and Insung Ihm</p>
+            <p class="venue"><em>IEEE International Symposium on Mixed and Augmented Reality (ISMAR)</em>, Bari, Italy, pp. 413–421, 2021</p>
+            <p class="links"><a href="https://doi.org/10.1109/ISMAR52148.2021.00058">IEEE Xplore</a><a href="https://drive.google.com/file/d/1uPg6xM4BeqQWn6KgiI1c5Ou9cdhB0OTK/view?usp=sharing">Video 0</a><a href="https://drive.google.com/file/d/1TGHBOu6KFGGDqaPLguLwlsA9NYKvv4nY/view?usp=sharing">Video 1</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2021_ieee_vr.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://ieeexplore.ieee.org/document/9419215">Disocclusion-Reducing Geometry for Multiple RGB-D Video Streams</a></p>
+            <p class="authors">Jaesuk Lee, <b>Youngwook Kim</b>, Jehyeong Yun, Joungil Yun, Won-Sik Cheong, and Insung Ihm</p>
+            <p class="venue"><em>IEEE Conference on Virtual Reality and 3D User Interfaces</em> (Abstracts and Workshops), Lisbon, Portugal, pp. 603–604, 2021</p>
+            <p class="links"><a href="https://ieeexplore.ieee.org/document/9419215">IEEE Xplore</a><a href="https://www.youtube.com/watch?v=4Efjm79VyTg">Teaser Video</a><a href="https://drive.google.com/file/d/15tUdJkBR1bslw5Z1seP1Cxc9UhuVvx7v/view?usp=sharing">Demo Video</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2016_ismar_poster.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.1109/ISMAR-Adjunct.2016.0057">Low-Cost Depth Camera Pose Tracking for Mobile Platforms</a></p>
+            <p class="authors">Insung Ihm, <b>Youngwook Kim</b>, Jaehyun Lee, Jiman Jeong, and Ingu Park</p>
+            <p class="venue"><em>IEEE International Symposium on Mixed and Augmented Reality (ISMAR)</em> (Poster Papers), Merida, Mexico, pp. 123–126, 2016</p>
+            <p class="links"><a href="https://doi.org/10.1109/ISMAR-Adjunct.2016.0057">IEEE Xplore</a><a href="https://drive.google.com/file/d/1SvkRnjd59iG9O7JCl2uV1Rh-9pCV1vLg/view?usp=sharing">Video 1(2-Men-S)</a><a href="https://drive.google.com/file/d/1iSdDjat59PAJkhn91QsS_TNxGYtG0543/view?usp=sharing">Video 2(Desk-S)</a><a href="https://drive.google.com/file/d/12oWTQhpe8SExSwGV9hT-I5AAmFzNBKS_/view?usp=sharing">Video 3(Desk-S, captured)</a><a href="https://drive.google.com/file/d/14TmnpNnZr3SVTs9B3bdd3ZdRWh4ZbkLa/view?usp=sharing">Video 4(Desk-K)</a><a href="https://drive.google.com/file/d/1pyTEwXwtrnW3SZGkWxFqSXYr5mgcnL7Y/view?usp=sharing">Video 5(Office-K)</a><a href="images/2016_ismar_results.jpg">Image(Reconstruction Results)</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2016_visual_computer.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.1007/s00371-016-1251-y">Adaptive Undersampling for Efficient Mobile Ray Tracing</a></p>
+            <p class="authors"><b>Youngwook Kim</b>, Woong Seo, Yongho Kim, Yeongkyu Lim, Jae-Ho Nah, and Insung Ihm</p>
+            <p class="venue"><em>The Visual Computer</em> (Special Issue of Computer Graphics International 2016), 32(6–8):801–811, 2016</p>
+            <p class="links"><a href="https://doi.org/10.1007/s00371-016-1251-y">Springer</a><a href="papers/2016_visual_computer_cgi_slides.pdf">Slides</a><a href="https://drive.google.com/file/d/13QeD04blHkBx5zW3oFW3Vb9Vd64UpFS4/view?usp=sharing">Video 1(Kitchen)</a><a href="https://drive.google.com/file/d/1G12UuMBG8WQo5ToxDUsCpDWNjZpmphcr/view?usp=sharing">Video 2(Bathroom)</a><a href="images/2016_visual_computer_cafe.jpg">Image 1(Cafe)</a><a href="images/2016_visual_computer_ben.jpg">Image 2(Ben)</a><a href="images/2016_visual_computer_conference.jpg">Image 3(Conference)</a><a href="images/2016_visual_computer_kitchen.jpg">Image 4(Kitchen)</a><a href="images/2016_visual_computer_kitchen_2x2.jpg">Image 5(Kitchen 2x2)</a><a href="images/2016_visual_computer_kitchen_4x4.jpg">Image 6(Kitchen 4x4)</a><a href="images/2016_visual_computer_bathroom.jpg">Image 7(Bathroom)</a><a href="images/2016_visual_computer_bathroom_2x2.jpg">Image 8(Bathroom 2x2)</a><a href="images/2016_visual_computer_bathroom_4x4.jpg">Image 9(Bathroom 4x4)</a><a href="images/2016_visual_computer_san_miguel.jpg">Image 10(San Miguel)</a></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="domestic">
+      <h2>Domestic Papers</h2>
+      <ol class="pubs">
+        <li class="pub">
+          <img class="thumb" src="images/2024_jok.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.5626/JOK.2024.51.2.173">Ray Tracing-based Real-time Collision Detection Using Bounding Mesh of Polygonal Model</a></p>
+            <p class="authors">Seokyoung Koh, <b>Youngwook Kim</b>, and Insung Ihm</p>
+            <p class="venue"><em>Journal of KIISE</em>, 51(2):173–183, 2024</p>
+            <p class="links"><a href="https://doi.org/10.5626/JOK.2024.51.2.173">KIISE</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2023_kcc.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11488398">Ray-tracing Hardware-based Real-time Collision Detection Using Bounding Mesh</a></p>
+            <p class="authors">Seokyoung Koh, <b>Youngwook Kim</b>, and Insung Ihm</p>
+            <p class="venue"><em>Korea Computer Congress (KCC)</em>, Jeju, Korea, pp. 1430–1432, 2023</p>
+            <p class="award">🏆 Best Paper Award</p>
+            <p class="links"><a href="https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11488398">DBpia</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2023_kcgs.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.15701/kcgs.2023.29.3.93">Effective Ray-tracing based Rendering Methods for Point Cloud Data in Mobile Environments</a></p>
+            <p class="authors">Woong Seo, <b>Youngwook Kim</b>, Kiseo Park, Yerin Kim, and Insung Ihm</p>
+            <p class="venue"><em>Journal of the Korea Computer Graphics Society</em>, 29(3):93–103, 2023</p>
+            <p class="links"><a href="https://doi.org/10.15701/kcgs.2023.29.3.93">KCGS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2022_kcgs.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.15701/kcgs.2022.28.3.113">Adaptive Foveated Ray Tracing Based on Time-Constrained Rendering for Head-Mounted Display</a></p>
+            <p class="authors"><b>Youngwook Kim</b> and Insung Ihm</p>
+            <p class="venue"><em>Journal of the Korea Computer Graphics Society</em>, 28(3):113–123, 2022</p>
+            <p class="links"><a href="https://doi.org/10.15701/kcgs.2022.28.3.113">KCGS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/2015_kiise_winter.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE06602642">Development of 4D Light Field Camera Systems Using Raspberry Pi Clusters</a></p>
+            <p class="authors">Jaepung An, Woong Seo, <b>Youngwook Kim</b>, Sanghun Park, and Insung Ihm</p>
+            <p class="venue"><em>KIISE Winter Conference</em>, Gangwon, Korea, pp. 1110–1112, 2015</p>
+            <p class="award">🏆 Best Paper Award</p>
+            <p class="links"><a href="https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE06602642">DBpia</a></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="patents">
+      <h2>Patents</h2>
+      <ol class="pubs">
+        <li class="pub">
+          <img class="thumb" src="images/patent_10-2934847.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.8080/1020230007341">A 3D background model construction method based on ray tracing for disocclusion filling and a depth image based view synthesis method using the 3D background model construction method</a></p>
+            <p class="authors">Insung Ihm and <b>Youngwook Kim</b></p>
+            <p class="venue"><em>Korea Patent</em>, No. 10-2934847, 2026</p>
+            <p class="links"><a href="https://doi.org/10.8080/1020230007341">KIPRIS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/patent_10-2910568.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.8080/1020210148569">Method for Ray Tracing for Virtual Reality Headset Based on Selective Sampling</a></p>
+            <p class="authors">Insung Ihm and <b>Youngwook Kim</b></p>
+            <p class="venue"><em>Korea Patent</em>, No. 10-2910568, 2026</p>
+            <p class="links"><a href="https://doi.org/10.8080/1020210148569">KIPRIS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/patent_10-2917058.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.8080/1020220002571">Method and Apparatus for Synthesizing Virtual View Image Based on GPU Pipeline</a></p>
+            <p class="authors">Joungil Yun, Sangwoon Kwak, <b>Youngwook Kim</b>, Jehyeong Yun, and Insung Ihm</p>
+            <p class="venue"><em>Korea Patent</em>, No. 10-2917058, 2026</p>
+            <p class="links"><a href="https://doi.org/10.8080/1020220002571">KIPRIS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/patent_10-2557573.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.8080/1020150171515">Digital Device and Method of Processing Data the Same</a></p>
+            <p class="authors">Jinhong Park, Insung Ihm, Jaeho Na, Yeongkyu Lim, <b>Youngwook Kim</b>, and Woong Seo</p>
+            <p class="venue"><em>Korea Patent</em>, No. 10-2557573, 2023</p>
+            <p class="links"><a href="https://doi.org/10.8080/1020150171515">KIPRIS</a></p>
+          </div>
+        </li>
+        <li class="pub">
+          <img class="thumb" src="images/patent_10-1420727.jpg" alt="" loading="lazy">
+          <div class="pub-body">
+            <p class="title"><a href="https://doi.org/10.8080/1020120136326">Method for Rotating Virtual Camera on Touchscreen-Based Device</a></p>
+            <p class="authors">Insung Ihm, Seheum Na, Woong Seo, and <b>Youngwook Kim</b></p>
+            <p class="venue"><em>Korea Patent</em>, No. 10-1420727, 2014</p>
+            <p class="links"><a href="https://doi.org/10.8080/1020120136326">KIPRIS</a></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  /* copy email */
+  var copyBtn = document.getElementById('copy'), mail = document.getElementById('mail');
+  var copyHTML = copyBtn.textContent;
+  function selectMail() {
+    var r = document.createRange(); r.selectNodeContents(mail);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  copyBtn.addEventListener('click', function () {
+    var done = function () {
+      copyBtn.textContent = 'Copied';
+      setTimeout(function () { copyBtn.textContent = copyHTML; }, 1600);
+    };
+    try { navigator.clipboard.writeText(mail.textContent).then(done, selectMail); }
+    catch (e) { selectMail(); }
+  });
+})();
+</script>
+</body>
+</html>
